@@ -14,7 +14,7 @@ LingmoUI.Window {
 
     // Same window look as Lingmo Settings
     background.opacity: LingmoUI.Theme.darkMode ? 0.88 : 0.97
-    header.height: 40
+    header.height: LingmoUI.Units.windowHeaderHeight
     contentTopMargin: 0
 
     LingmoUI.WindowBlur {
@@ -42,15 +42,15 @@ LingmoUI.Window {
 
                 Label {
                     id: clockLabel
-                    font.pointSize: LingmoUI.Theme.fontSize * 4
+                    font.pointSize: Math.round(LingmoUI.Units.fontDisplay * 1.4)
                     font.bold: true
                     color: LingmoUI.Theme.textColor
                     Layout.alignment: Qt.AlignHCenter
                 }
                 Label {
                     id: dateLabel
-                    font.pointSize: LingmoUI.Theme.fontSize * 1.2
-                    color: LingmoUI.Theme.disabledTextColor
+                    font.pointSize: LingmoUI.Units.fontSubheading
+                    color: LingmoUI.Theme.secondaryTextColor
                     Layout.alignment: Qt.AlignHCenter
                 }
             }
@@ -86,7 +86,7 @@ LingmoUI.Window {
                 target: alarmList
             }
 
-            delegate: Card {
+            delegate: LingmoUI.Card {
                 width: ListView.view.width - ListView.view.leftMargin - ListView.view.rightMargin
                 height: alarmRow.implicitHeight + LingmoUI.Units.largeSpacing * 2
                 hoverEnabled: true
@@ -103,13 +103,13 @@ LingmoUI.Window {
                         spacing: 2
                         Label {
                             text: modelData.time
-                            font.pointSize: LingmoUI.Theme.fontSize * 2
+                            font.pointSize: LingmoUI.Units.fontTitle
                             font.bold: true
                             color: modelData.active ? LingmoUI.Theme.textColor : LingmoUI.Theme.disabledTextColor
                         }
                         Label {
                             text: modelData.label
-                            color: LingmoUI.Theme.disabledTextColor
+                            color: LingmoUI.Theme.secondaryTextColor
                             elide: Text.ElideRight
                             Layout.fillWidth: true
                         }
@@ -120,23 +120,25 @@ LingmoUI.Window {
                         onToggled: alarmManager.toggleAlarm(modelData.id, checked)
                     }
 
-                    IconButton {
+                    LingmoUI.IconButton {
                         iconName: "edit-delete"
+                        tipText: qsTr("Excluir alarme")
                         onClicked: alarmManager.deleteAlarm(modelData.id)
                     }
                 }
             }
 
-            Label {
+            LingmoUI.EmptyState {
                 anchors.centerIn: parent
-                text: qsTr("Nenhum alarme configurado.")
-                color: LingmoUI.Theme.disabledTextColor
+                width: Math.min(implicitWidth, alarmList.width - LingmoUI.Units.largeSpacing * 4)
                 visible: alarmList.count === 0
+                iconName: "alarm-symbolic"
+                title: qsTr("Nenhum alarme configurado.")
             }
         }
 
         // Add Alarm
-        Card {
+        LingmoUI.Card {
             Layout.fillWidth: true
             Layout.leftMargin: LingmoUI.Units.largeSpacing * 2
             Layout.rightMargin: LingmoUI.Units.largeSpacing * 2
@@ -160,7 +162,7 @@ LingmoUI.Window {
                     placeholderText: qsTr("Nome do alarme")
                     Layout.fillWidth: true
                 }
-                ActionButton {
+                LingmoUI.ActionButton {
                     text: qsTr("Adicionar")
                     primary: true
                     onClicked: {
@@ -190,7 +192,7 @@ LingmoUI.Window {
         modal: true
         Label {
             text: qsTr("O alarme está tocando!")
-            font.pointSize: LingmoUI.Theme.fontSize * 1.5
+            font.pointSize: LingmoUI.Units.fontHeading
             color: LingmoUI.Theme.textColor
         }
     }
