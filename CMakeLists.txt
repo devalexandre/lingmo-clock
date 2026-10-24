@@ -26,6 +26,17 @@ target_link_libraries(lingmo-clock
   Qt6::Core Qt6::Gui Qt6::Qml Qt6::Quick Qt6::QuickControls2 Qt6::Sql Qt6::DBus
 )
 
+# Lingmo Intents: clock.alarm.create and clock.timer.start on com.lingmo.Clock /Intents
+find_package(LingmoIntents 1.0 QUIET)
+if(LingmoIntents_FOUND)
+  target_sources(lingmo-clock PRIVATE src/clockintents.cpp src/clockintents.h)
+  target_compile_definitions(lingmo-clock PRIVATE HAVE_LINGMO_INTENTS)
+  target_link_libraries(lingmo-clock PRIVATE LingmoIntents::LingmoIntents)
+  lingmo_install_intents(MANIFEST data/intents/lingmo-clock.json)
+else()
+  message(WARNING "LingmoIntents not found: the clock is built without app actions (intents)")
+endif()
+
 install(TARGETS lingmo-clock RUNTIME DESTINATION bin)
 install(FILES lingmo-clock.desktop DESTINATION share/applications)
 # com.lingmo.Clock: started on demand (lingmo-clock --background) by D-Bus activation

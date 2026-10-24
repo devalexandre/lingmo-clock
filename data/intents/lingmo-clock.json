@@ -1,0 +1,73 @@
+{
+  "format": "lingmo-intents",
+  "version": 1,
+  "app": "lingmo-clock",
+  "name": {"en": "Clock", "pt_BR": "Relógio"},
+  "icon": "lingmo-clock",
+  "desktop": "lingmo-clock.desktop",
+  "dbus": {"service": "com.lingmo.Clock", "path": "/Intents"},
+  "intents": [
+    {
+      "id": "clock.alarm.create",
+      "title": {"en": "Create alarm", "pt_BR": "Criar alarme"},
+      "description": {"en": "Creates an alarm in the Clock. It rings even with the window closed.",
+                      "pt_BR": "Cria um alarme no Relógio. Ele toca mesmo com a janela fechada."},
+      "summary": {"en": "Create alarm at {time}", "pt_BR": "Criar alarme às {time}"},
+      "icon": "chronometer",
+      "capabilities": ["create"],
+      "assistantTool": "alarms_write",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "time": {"type": "string", "format": "time", "title": {"en": "Time", "pt_BR": "Hora"},
+                   "description": {"en": "24-hour time, e.g. 07:00", "pt_BR": "Hora no formato 24 h, ex.: 07:00"}},
+          "label": {"type": "string", "maxLength": 100, "default": "Alarme", "title": {"en": "Name", "pt_BR": "Nome"}}
+        },
+        "required": ["time"]
+      },
+      "result": {
+        "type": "object",
+        "properties": {
+          "time": {"type": "string", "title": {"en": "Time", "pt_BR": "Hora"}},
+          "label": {"type": "string", "title": {"en": "Name", "pt_BR": "Nome"}}
+        }
+      },
+      "examples": {
+        "pt_BR": ["criar alarme às {time}", "criar alarme {time}", "alarme às {time}", "me acorde às {time}",
+                  "despertar às {time}", "novo alarme {time} {label}"],
+        "en": ["set an alarm for {time}", "create alarm at {time}", "wake me up at {time}", "alarm {time}"]
+      }
+    },
+    {
+      "id": "clock.timer.start",
+      "title": {"en": "Start timer", "pt_BR": "Iniciar timer"},
+      "description": {"en": "Starts a countdown in the Clock (1 second to 24 hours).",
+                      "pt_BR": "Inicia uma contagem regressiva no Relógio (de 1 segundo a 24 horas)."},
+      "summary": {"en": "Start a {minutes} min timer", "pt_BR": "Iniciar timer de {minutes} min"},
+      "icon": "chronometer-start",
+      "capabilities": ["create"],
+      "assistantTool": "alarms_write",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "minutes": {"type": "number", "minimum": 0.0167, "maximum": 1440, "title": {"en": "Minutes", "pt_BR": "Minutos"}},
+          "label": {"type": "string", "maxLength": 100, "default": "Timer", "title": {"en": "Name", "pt_BR": "Nome"}}
+        },
+        "required": ["minutes"]
+      },
+      "result": {
+        "type": "object",
+        "properties": {
+          "seconds": {"type": "integer", "title": {"en": "Seconds", "pt_BR": "Segundos"}},
+          "label": {"type": "string", "title": {"en": "Name", "pt_BR": "Nome"}},
+          "endsAt": {"type": "string", "title": {"en": "Ends at", "pt_BR": "Termina às"}}
+        }
+      },
+      "examples": {
+        "pt_BR": ["timer de {minutes} minutos", "timer {minutes} min", "iniciar timer de {minutes} minutos",
+                  "cronômetro de {minutes} minutos", "me avise em {minutes} minutos"],
+        "en": ["start a {minutes} minute timer", "timer for {minutes} minutes", "set a timer for {minutes} min"]
+      }
+    }
+  ]
+}

@@ -6,6 +6,9 @@
 #include <QQuickWindow>
 #include "alarmmanager.h"
 #include "clockservice.h"
+#ifdef HAVE_LINGMO_INTENTS
+#include "clockintents.h"
+#endif
 
 static const QString DBusService = QStringLiteral("com.lingmo.Clock");
 static const QString DBusPath = QStringLiteral("/Clock");
@@ -61,6 +64,10 @@ int main(int argc, char *argv[]) {
     ClockService service(&manager, showWindow);
     if (bus.isConnected())
         bus.registerObject(DBusPath, &service, QDBusConnection::ExportAllSlots);
+#ifdef HAVE_LINGMO_INTENTS
+    if (bus.isConnected())
+        publishClockIntents(&service, &app);
+#endif
     if (addAlarmArg >= 0 && addAlarmArg + 1 < arguments.size())
         service.addAlarm(arguments.at(addAlarmArg + 1), arguments.value(addAlarmArg + 2));
 

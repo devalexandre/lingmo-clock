@@ -11,3 +11,4 @@ Categories=Utility;Clock;
 Keywords=clock;alarm;timer;
 Keywords[pt_BR]=relógio;alarme;despertador;
 StartupNotify=true
+X-Lingmo-Intents=clock.alarm.create;clock.timer.start;
