@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Clock alarms
+Name[pt_BR]=Alarmes do Relógio
+Exec=lingmo-clock --background
+TryExec=lingmo-clock
+Icon=lingmo-clock
+Terminal=false
+NoDisplay=true
+X-GNOME-Autostart-enabled=true
+X-GNOME-Autostart-Delay=10

@@ -17,6 +17,9 @@ LingmoUI.Window {
     header.height: LingmoUI.Units.windowHeaderHeight
     contentTopMargin: 0
 
+    // 0 alarms, 1 timer and stopwatch
+    property int section: 0
+
     LingmoUI.WindowBlur {
         view: root
         geometry: Qt.rect(root.x, root.y, root.width, root.height)
@@ -66,114 +69,150 @@ LingmoUI.Window {
             }
         }
 
-        // Alarms List
-        ListView {
-            id: alarmList
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            clip: true
-            model: alarmManager.alarms
-            spacing: LingmoUI.Units.smallSpacing
-            leftMargin: LingmoUI.Units.largeSpacing * 2
-            rightMargin: LingmoUI.Units.largeSpacing * 2
-            topMargin: LingmoUI.Units.smallSpacing
-            bottomMargin: LingmoUI.Units.largeSpacing
-            boundsBehavior: Flickable.StopAtBounds
-
-            ScrollBar.vertical: ScrollBar {}
-
-            LingmoUI.WheelHandler {
-                target: alarmList
-            }
-
-            delegate: LingmoUI.Card {
-                width: ListView.view.width - ListView.view.leftMargin - ListView.view.rightMargin
-                height: alarmRow.implicitHeight + LingmoUI.Units.largeSpacing * 2
-                hoverEnabled: true
-
-                RowLayout {
-                    id: alarmRow
-                    anchors.fill: parent
-                    anchors.leftMargin: LingmoUI.Units.largeSpacing * 1.5
-                    anchors.rightMargin: LingmoUI.Units.largeSpacing
-                    spacing: LingmoUI.Units.largeSpacing
-
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        spacing: 2
-                        Label {
-                            text: modelData.time
-                            font.pointSize: LingmoUI.Units.fontTitle
-                            font.bold: true
-                            color: modelData.active ? LingmoUI.Theme.textColor : LingmoUI.Theme.disabledTextColor
-                        }
-                        Label {
-                            text: modelData.label
-                            color: LingmoUI.Theme.secondaryTextColor
-                            elide: Text.ElideRight
-                            Layout.fillWidth: true
-                        }
-                    }
-
-                    Switch {
-                        checked: modelData.active
-                        onToggled: alarmManager.toggleAlarm(modelData.id, checked)
-                    }
-
-                    LingmoUI.IconButton {
-                        iconName: "edit-delete"
-                        tipText: qsTr("Excluir alarme")
-                        onClicked: alarmManager.deleteAlarm(modelData.id)
-                    }
-                }
-            }
-
-            LingmoUI.EmptyState {
-                anchors.centerIn: parent
-                width: Math.min(implicitWidth, alarmList.width - LingmoUI.Units.largeSpacing * 4)
-                visible: alarmList.count === 0
-                iconName: "alarm-symbolic"
-                title: qsTr("Nenhum alarme configurado.")
-            }
+        // Alarms | Timer and stopwatch
+        LingmoUI.SegmentedControl {
+            id: sectionTabs
+            Layout.alignment: Qt.AlignHCenter
+            Layout.bottomMargin: LingmoUI.Units.largeSpacing
+            model: [qsTr("Alarmes"), qsTr("Timer e cronômetro")]
+            currentIndex: root.section
+            onActivated: (index) => root.section = index
         }
 
-        // Add Alarm
-        LingmoUI.Card {
+        StackLayout {
             Layout.fillWidth: true
-            Layout.leftMargin: LingmoUI.Units.largeSpacing * 2
-            Layout.rightMargin: LingmoUI.Units.largeSpacing * 2
-            Layout.bottomMargin: LingmoUI.Units.largeSpacing * 2
-            implicitHeight: addRow.implicitHeight + LingmoUI.Units.largeSpacing * 2
+            Layout.fillHeight: true
+            currentIndex: sectionTabs.currentIndex
 
-            RowLayout {
-                id: addRow
-                anchors.fill: parent
-                anchors.margins: LingmoUI.Units.largeSpacing
-                spacing: LingmoUI.Units.largeSpacing
+            ColumnLayout {
+                spacing: 0
 
-                TextField {
-                    id: timeField
-                    placeholderText: "HH:mm"
-                    Layout.preferredWidth: 80
-                    inputMask: "99:99"
-                }
-                TextField {
-                    id: labelField
-                    placeholderText: qsTr("Nome do alarme")
+                // Alarms List
+                ListView {
+                    id: alarmList
                     Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    clip: true
+                    model: alarmManager.alarms
+                    spacing: LingmoUI.Units.smallSpacing
+                    leftMargin: LingmoUI.Units.largeSpacing * 2
+                    rightMargin: LingmoUI.Units.largeSpacing * 2
+                    topMargin: LingmoUI.Units.smallSpacing
+                    bottomMargin: LingmoUI.Units.largeSpacing
+                    boundsBehavior: Flickable.StopAtBounds
+
+                    ScrollBar.vertical: ScrollBar {}
+
+                    LingmoUI.WheelHandler {
+                        target: alarmList
+                    }
+
+                    delegate: LingmoUI.Card {
+                        width: ListView.view.width - ListView.view.leftMargin - ListView.view.rightMargin
+                        height: alarmRow.implicitHeight + LingmoUI.Units.largeSpacing * 2
+                        hoverEnabled: true
+
+                        RowLayout {
+                            id: alarmRow
+                            anchors.fill: parent
+                            anchors.leftMargin: LingmoUI.Units.largeSpacing * 1.5
+                            anchors.rightMargin: LingmoUI.Units.largeSpacing
+                            spacing: LingmoUI.Units.largeSpacing
+
+                            ColumnLayout {
+                                Layout.fillWidth: true
+                                spacing: 2
+                                Label {
+                                    text: modelData.time
+                                    font.pointSize: LingmoUI.Units.fontTitle
+                                    font.bold: true
+                                    color: modelData.active ? LingmoUI.Theme.textColor : LingmoUI.Theme.disabledTextColor
+                                }
+                                Label {
+                                    text: modelData.label
+                                    color: LingmoUI.Theme.secondaryTextColor
+                                    elide: Text.ElideRight
+                                    Layout.fillWidth: true
+                                }
+                            }
+
+                            Switch {
+                                checked: modelData.active
+                                onToggled: alarmManager.toggleAlarm(modelData.id, checked)
+                            }
+
+                            LingmoUI.IconButton {
+                                iconName: "edit-delete"
+                                tipText: qsTr("Excluir alarme")
+                                onClicked: alarmManager.deleteAlarm(modelData.id)
+                            }
+                        }
+                    }
+
+                    LingmoUI.EmptyState {
+                        anchors.centerIn: parent
+                        width: Math.min(implicitWidth, alarmList.width - LingmoUI.Units.largeSpacing * 4)
+                        visible: alarmList.count === 0
+                        iconName: "alarm-symbolic"
+                        title: qsTr("Nenhum alarme configurado.")
+                    }
                 }
-                LingmoUI.ActionButton {
-                    text: qsTr("Adicionar")
-                    primary: true
-                    onClicked: {
-                        if (timeField.text.length === 5) {
-                            alarmManager.addAlarm(timeField.text, labelField.text || qsTr("Alarme"))
-                            timeField.text = ""
-                            labelField.text = ""
+
+                // Add Alarm
+                LingmoUI.Card {
+                    Layout.fillWidth: true
+                    Layout.leftMargin: LingmoUI.Units.largeSpacing * 2
+                    Layout.rightMargin: LingmoUI.Units.largeSpacing * 2
+                    Layout.bottomMargin: LingmoUI.Units.largeSpacing * 2
+                    implicitHeight: addRow.implicitHeight + LingmoUI.Units.largeSpacing * 2
+
+                    RowLayout {
+                        id: addRow
+                        anchors.fill: parent
+                        anchors.margins: LingmoUI.Units.largeSpacing
+                        spacing: LingmoUI.Units.largeSpacing
+
+                        TextField {
+                            id: timeField
+                            placeholderText: "HH:mm"
+                            Layout.preferredWidth: 80
+                            inputMask: "99:99"
+                        }
+                        TextField {
+                            id: labelField
+                            placeholderText: qsTr("Nome do alarme")
+                            Layout.fillWidth: true
+                        }
+                        LingmoUI.ActionButton {
+                            text: qsTr("Adicionar")
+                            primary: true
+                            onClicked: {
+                                if (timeField.text.length === 5) {
+                                    alarmManager.addAlarm(timeField.text, labelField.text || qsTr("Alarme"))
+                                    timeField.text = ""
+                                    labelField.text = ""
+                                }
+                            }
                         }
                     }
                 }
             }
+
+            TimerStopwatch {
+                id: timerStopwatch
+                onTimerFinished: {
+                    ringDialog.title = qsTr("Timer")
+                    ringDialog.open()
+                }
+            }
+        }
+    }
+
+    // lingmo-clock --timer SECONDS: open on the timer, already counting
+    Component.onCompleted: {
+        if (initialTimerSeconds > 0) {
+            root.section = 1
+            timerStopwatch.startTimer(initialTimerSeconds * 1000)
         }
     }
 
